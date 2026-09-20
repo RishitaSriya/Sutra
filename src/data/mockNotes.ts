@@ -1,12 +1,13 @@
 import { ShortNote } from '../types';
 
 export const mockShortNotes: ShortNote[] = [
+  // Web Development Track
   {
     id: 'note_http_60s',
     title: 'HTTP in 60 Seconds',
     readTime: '60 SEC READ',
     topic: 'Networking',
-    category: 'Web Architecture',
+    category: 'Web Development',
     whatItIs: 'HTTP (Hypertext Transfer Protocol) is an application-layer protocol for transmitting hypermedia documents. It operates on a request-response model between clients (browsers) and servers.',
     thinkOfItLike: 'Sending a registered post envelope: The Request Header is the stamp and postal address; the Request Body is the letter inside; the Response Status (200, 404) is the postal delivery receipt.',
     rememberThis: [
@@ -23,9 +24,9 @@ export const mockShortNotes: ShortNote[] = [
     title: 'The JS Event Loop in 60 Seconds',
     readTime: '60 SEC READ',
     topic: 'JavaScript Internals',
-    category: 'Core Language',
+    category: 'Web Development',
     whatItIs: 'JavaScript is single-threaded (one call stack). The Event Loop is the conductor that offloads async operations to browser Web APIs and feeds completed callbacks back into the stack when it becomes empty.',
-    thinkOfItLike: 'A single chef in a busy kitchen (Call Stack). When an order needs 20 minutes in the oven (Async Timer/Fetch), the chef puts it in the oven (Web API) and continues chopping vegetables, only checking the oven when their chopping cutting board is cleared.',
+    thinkOfItLike: 'A single chef in a busy kitchen (Call Stack). When an order needs 20 minutes in the oven (Async Timer/Fetch), the chef puts it in the oven (Web API) and continues chopping vegetables, only checking the oven when their cutting board is cleared.',
     rememberThis: [
       'Call Stack executes synchronous code first.',
       'Microtasks (Promises, queueMicrotask) run immediately after current stack frame clears.',
@@ -39,7 +40,7 @@ export const mockShortNotes: ShortNote[] = [
     title: 'Database Indexing (B-Trees) in 60 Seconds',
     readTime: '60 SEC READ',
     topic: 'Databases',
-    category: 'Backend & Data',
+    category: 'Web Development',
     whatItIs: 'A database index is a specialized data structure (usually a balanced B+ Tree) that allows the database engine to find specific rows in O(log N) disk seeks instead of doing a full sequential table scan O(N).',
     thinkOfItLike: 'The index at the back of a 1,000-page engineering textbook. You don’t read all 1,000 pages to find "Dijkstra’s Algorithm"; you flip straight to the "D" section in the index and jump to page 482.',
     rememberThis: [
@@ -50,12 +51,14 @@ export const mockShortNotes: ShortNote[] = [
     commonMistake: 'Adding an index to every single column in a high-write table. This creates massive disk write amplification and memory bloat.',
     isSaved: true,
   },
+
+  // Security Track
   {
     id: 'note_cors_60s',
     title: 'CORS Demystified in 60 Seconds',
     readTime: '60 SEC READ',
     topic: 'Security & Web APIs',
-    category: 'Security',
+    category: 'Security & Systems',
     whatItIs: 'CORS (Cross-Origin Resource Sharing) is a browser security mechanism that restricts a webpage on one origin (domain/port) from requesting sensitive resources on a different origin unless the server explicitly permits it with headers.',
     thinkOfItLike: 'College campus security: You have an ID card for College A. If you try to walk into College B’s private lab, the gate guard (the browser) stops you unless College B has an explicit sign saying "Students of College A are welcome here" (Access-Control-Allow-Origin).',
     rememberThis: [
@@ -66,4 +69,87 @@ export const mockShortNotes: ShortNote[] = [
     commonMistake: 'Trying to "fix CORS in frontend React code". CORS headers must be sent by the BACKEND server responding to the request.',
     isSaved: false,
   },
+  {
+    id: 'note_sql_injection_60s',
+    title: 'SQL Injection Defense in 60 Seconds',
+    readTime: '60 SEC READ',
+    topic: 'AppSec',
+    category: 'Security & Systems',
+    whatItIs: 'SQL Injection occurs when untrusted user input is directly concatenated into a dynamic SQL string, enabling attackers to execute arbitrary database commands and bypass authentication.',
+    thinkOfItLike: 'Giving a bank teller a check where the amount field says "₹500 AND ALSO transfer all vault money to Account 999". If the teller reads it literally without separation, you get robbed.',
+    rememberThis: [
+      'Never concatenate raw user strings into SQL queries.',
+      'Always use Parameterized Queries (Prepared Statements) where the SQL engine compiles query structure before binding parameters.',
+      'Use ORM abstractions with safe parameter binding.',
+    ],
+    commonMistake: 'Relying on client-side input sanitization or simple string replacements like replacing single quotes.',
+    isSaved: true,
+  },
+
+  // Data Science Track
+  {
+    id: 'note_iqr_outliers_60s',
+    title: 'IQR Outlier Detection in 60 Seconds',
+    readTime: '60 SEC READ',
+    topic: 'Statistics & Cleaning',
+    category: 'Data Science',
+    whatItIs: 'The Interquartile Range (IQR = Q3 - Q1) measures statistical dispersion in the middle 50% of data and provides a robust mathematical threshold to detect extreme outliers without being skewed by extreme values.',
+    thinkOfItLike: 'A cricket batting average: If a batsman usually scores 30-70 runs (IQR), a 0 due to a freak runout or 200 on a flat pitch are flagged beyond the 1.5 * IQR fence.',
+    rememberThis: [
+      'Lower Fence = Q1 - 1.5 * IQR.',
+      'Upper Fence = Q3 + 1.5 * IQR.',
+      'IQR is far more robust to extreme skewed data than Standard Deviation (Z-score).',
+    ],
+    commonMistake: 'Blindly dropping all outliers without understanding business context (e.g. ₹50,000 purchase during a Diwali flash sale is a valid VIP transaction, not bad data).',
+    isSaved: false,
+  },
+  {
+    id: 'note_minmax_vs_zscore_60s',
+    title: 'Min-Max Scaling vs Standard Z-Score in 60 Seconds',
+    readTime: '60 SEC READ',
+    topic: 'Feature Engineering',
+    category: 'Data Science',
+    whatItIs: 'Min-Max Scaling bounds features strictly between [0, 1], while Standard Z-Score standardizes features to have mean=0 and variance=1.',
+    thinkOfItLike: 'Min-Max is like converting exam marks into percentages (0 to 100%). Z-Score is like ranking students by how many standard deviations above or below the national class average they scored.',
+    rememberThis: [
+      'Use Min-Max for Neural Networks and image pixel values [0, 255] -> [0, 1].',
+      'Use Standard Z-Score for algorithms assuming normal distribution (Linear Regression, Logistic Regression, SVM, PCA).',
+      'Always fit scaler ONLY on Training data and transform Test data to prevent data leakage.',
+    ],
+    commonMistake: 'Calling `scaler.fit_transform(X_test)` instead of `scaler.transform(X_test)`.',
+    isSaved: true,
+  },
+
+  // GATE CSE Track
+  {
+    id: 'note_os_scheduling_60s',
+    title: 'Round Robin CPU Scheduling in 60 Seconds',
+    readTime: '60 SEC READ',
+    topic: 'Operating Systems',
+    category: 'GATE CSE',
+    whatItIs: 'Round Robin is a preemptive CPU scheduling algorithm where each ready process is allocated a fixed time slice (Time Quantum). If the process is not finished within the quantum, it is preempted to the back of the ready queue.',
+    thinkOfItLike: 'A fair teacher giving every student in a queue exactly 2 minutes to ask a question before asking them to go to the back if their doubt takes longer.',
+    rememberThis: [
+      'If Time Quantum is extremely large, Round Robin degrades into FCFS (First-Come First-Served).',
+      'If Time Quantum is too small, context-switch overhead dominates and CPU throughput plummets.',
+      'Round Robin guarantees optimal response time for interactive multi-tasking systems.',
+    ],
+    commonMistake: 'Forgetting to add Context Switching Overhead (CS time) in GATE numerical calculation when calculating average turnaround time.',
+    isSaved: true,
+  },
+  {
+    id: 'note_dbms_serializability_60s',
+    title: 'Conflict Serializability in 60 Seconds',
+    readTime: '60 SEC READ',
+    topic: 'DBMS',
+    category: 'GATE CSE',
+    whatItIs: 'A concurrent database schedule is Conflict Serializable if it can be transformed into a serial schedule by swapping non-conflicting adjacent operations.',
+    thinkOfItLike: 'Two cars taking turns at an intersection: If their paths don’t cross (Read-Read on same item, or operations on different items), order doesn’t matter. If both try to turn onto the same lane (Read-Write or Write-Write), one must strictly yield.',
+    rememberThis: [
+      'Conflict operations must: (1) Belong to different transactions, (2) Access the SAME data item, (3) At least ONE operation is a WRITE.',
+      'Draw Precedence Graph (Serialization Graph): if graph has NO CYCLE, schedule is Conflict Serializable.',
+    ],
+    commonMistake: 'Treating Read(A) by T1 and Read(A) by T2 as a conflict. Read-Read never conflicts!',
+    isSaved: false,
+  }
 ];

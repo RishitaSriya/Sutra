@@ -23,4 +23,24 @@ export const noteApi = {
       method: 'POST',
     });
   },
+
+  async generateAiNote(topic: string, category?: string): Promise<ShortNote> {
+    const n = await apiClient<any>('/notes/generate-ai', {
+      method: 'POST',
+      body: JSON.stringify({ topic, category }),
+    });
+    return {
+      id: n.id,
+      title: n.title,
+      readTime: n.read_time,
+      topic: n.topic,
+      category: n.category,
+      whatItIs: n.what_it_is,
+      thinkOfItLike: n.think_of_it_like,
+      rememberThis: n.remember_this || [],
+      commonMistake: n.common_mistake,
+      isSaved: n.is_saved,
+    };
+  },
 };
+

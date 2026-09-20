@@ -3,8 +3,10 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.note import Note
 from app.models.user import User
-from app.schemas.schemas import NoteCreate
+from app.schemas.schemas import NoteCreate, NoteGenerateAiRequest
 from app.utils.auth_utils import get_current_user
+from app.services.gemini_service import gemini_service
+import uuid
 
 router = APIRouter(prefix="/notes", tags=["Notes"])
 
@@ -26,6 +28,49 @@ def get_notes(user: User = Depends(get_current_user), db: Session = Depends(get_
         }
         for n in notes
     ]
+
+@router.post("/generate-ai")
+def generate_ai_note(
+    req: NoteGenerateAiRequest,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    note_data = gemini_service.generate_short_note(
+        topic=req.topic,
+        user_role=req.category or user.current_role or "Web Developer"
+    )
+    
+    # Save synthesized note to DB for the user
+    new_note = Note(
+        id=f"note_ai_{uuid.uuid4().hex[:8]}",
+        user_id=user.id,
+        title=note_data.get("title", f"{req.topic} in 60 Seconds"),
+        topic=note_data.get("topic", req.topic),
+        category=note_data.get("category", req.category or "Engineering Insights"),
+        read_time=note_data.get("read_time", "60 SEC READ"),
+        what_it_is=note_data.get("what_it_is", ""),
+        think_of_it_like=note_data.get("think_of_it_like", ""),
+        remember_this=note_data.get("remember_this", []),
+        common_mistake=note_data.get("common_mistake", ""),
+        is_saved=True
+    )
+    db.add(new_note)
+    db.commit()
+    db.refresh(new_note)
+    
+    return {
+        "id": new_note.id,
+        "title": new_note.title,
+        "read_time": new_note.read_time,
+        "topic": new_note.topic,
+        "category": new_note.category,
+        "what_it_is": new_note.what_it_is,
+        "think_of_it_like": new_note.think_of_it_like,
+        "remember_this": new_note.remember_this or [],
+        "common_mistake": new_note.common_mistake,
+        "is_saved": new_note.is_saved,
+        "is_ai_generated": True
+    }
 
 @router.get("/{note_id}")
 def get_note(note_id: str, db: Session = Depends(get_db)):
@@ -77,3 +122,4 @@ def create_note(req: NoteCreate, user: User = Depends(get_current_user), db: Ses
     db.commit()
     db.refresh(note)
     return note
+

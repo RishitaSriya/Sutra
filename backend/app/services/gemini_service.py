@@ -282,18 +282,72 @@ Provide JSON format:
             except Exception as e:
                 print(f"[Gemini Explain Error]: {e}")
 
-        # Fallback explanation
+    def generate_short_note(
+        self,
+        topic: str,
+        user_role: str = "Web Developer"
+    ) -> Dict[str, Any]:
+        persona_info = resolve_persona(user_role)
+        role_persona = persona_info["persona"]
+
+        model = get_gemini_model()
+        if model:
+            try:
+                prompt = f"""
+You are {role_persona}. Generate a high-yield 60-Second Short Revision Note for a {user_role} student on the topic: "{topic}".
+Return ONLY a valid JSON object with the following schema:
+{{
+  "title": "Clear punchy concept title",
+  "topic": "{topic}",
+  "category": "{user_role}",
+  "read_time": "60 SEC",
+  "what_it_is": "A clear, precise 2-sentence explanation of what this concept is and why it exists in production.",
+  "think_of_it_like": "A brilliant, memorable real-world analogy that makes the concept click instantly.",
+  "remember_this": [
+    "Crucial technical invariant 1",
+    "Performance or Big-O consideration 2",
+    "Production best practice 3"
+  ],
+  "common_mistake": "The #1 mistake junior or mid-level engineers make when designing or coding this."
+}}
+"""
+                res = model.generate_content(prompt)
+                data = safe_json_loads(res.text)
+                return {
+                    "id": f"note_{int(datetime.utcnow().timestamp())}",
+                    "title": data.get("title", f"Mastering {topic}"),
+                    "topic": topic,
+                    "category": data.get("category", user_role),
+                    "read_time": "60 SEC",
+                    "what_it_is": data.get("what_it_is", f"{topic} defines critical execution rules in {user_role}."),
+                    "think_of_it_like": data.get("think_of_it_like", "An automated checkpoint that validates data invariants."),
+                    "remember_this": data.get("remember_this", [
+                        "Always measure before optimizing",
+                        "Ensure clean error boundaries",
+                        "Keep operations idempotent across nodes"
+                    ]),
+                    "common_mistake": data.get("common_mistake", "Failing to account for asynchronous network latency and null bounds."),
+                    "is_saved": True
+                }
+            except Exception as e:
+                print(f"[Gemini Short Note Error]: {e}")
+
+        # Deterministic fallback
         return {
-            "title": f"Mastering {query[:30]}",
-            "explanation": f"{query} is a fundamental building block in {user_role}. It establishes clear contractual boundaries for state flow.",
-            "analogy": "Think of it like an air traffic control tower: instructions must be acknowledged before execution begins.",
-            "common_pitfall": "Forgetting asynchronous latency or edge-case null parameters.",
-            "key_takeaways": [
-                "Always ensure inputs are sanitised and typed.",
-                "Keep operations idempotent when retrying across distributed nodes.",
-                "Measure benchmark performance under peak load."
+            "id": f"note_{int(datetime.utcnow().timestamp())}",
+            "title": f"Quick Guide: {topic}",
+            "topic": topic,
+            "category": user_role,
+            "read_time": "60 SEC",
+            "what_it_is": f"{topic} is a core foundation in {user_role} that ensures system correctness, predictable state, and optimal performance.",
+            "think_of_it_like": "A traffic signal system preventing collisions across concurrent data streams.",
+            "remember_this": [
+                "Verify input invariants early at the boundary layer",
+                "Minimize redundant state mutations and allocations",
+                "Ensure resilient fallback paths on failure"
             ],
-            "role_persona": role_persona
+            "common_mistake": "Assuming network requests or database writes never fail or time out.",
+            "is_saved": True
         }
 
     def generate_flashcards(
@@ -562,5 +616,85 @@ Return ONLY a JSON object:
             "xp_awarded": xp_awarded
         }
 
+    def generate_performance_coach_review(
+        self,
+        user_name: str,
+        user_role: str,
+        total_xp: int,
+        streak_days: int,
+        weekly_minutes: int,
+        focus_topic: Optional[str] = None
+    ) -> Dict[str, Any]:
+        persona_info = resolve_persona(user_role)
+        role_persona = persona_info["persona"]
+
+        model = get_gemini_model()
+        if model:
+            try:
+                prompt = f"""
+You are the SUTRA Head of Engineering AI Performance Coach ({role_persona}).
+Provide an individualized, motivating yet rigorous technical growth diagnosis for student {user_name}.
+
+Student Profile:
+- Role: {user_role}
+- Total XP: {total_xp}
+- Active Streak: {streak_days} days
+- Study Time This Week: {weekly_minutes} minutes
+- Specific Focus: {focus_topic or 'Core curriculum & architecture'}
+
+Return ONLY a JSON object:
+{{
+  "summary": "2-3 sentences evaluating their learning velocity, consistency, and retention trajectory.",
+  "strengths": ["Clear technical strength 1", "Clear technical strength 2"],
+  "growth_areas": ["Targeted growth area with why it matters in interviews/jobs", "System design or depth gap to close"],
+  "recommended_focus_this_week": ["Actionable goal 1", "Actionable goal 2", "Actionable goal 3"],
+  "projected_readiness": "Tier-1 Tech Ready (85th percentile)",
+  "mentor_quote": "A punchy, memorable piece of engineering wisdom."
+}}
+"""
+                res = model.generate_content(prompt)
+                data = safe_json_loads(res.text)
+                return {
+                    "summary": data.get("summary", f"{user_name} is showing excellent velocity with a strong {streak_days}-day streak. Hands-on coding retention is high, and conceptual fundamentals are stabilizing."),
+                    "strengths": data.get("strengths", [
+                        "Consistent daily execution habit and rapid debugging loops",
+                        "High retention on system architecture analogies and trade-offs"
+                    ]),
+                    "growth_areas": data.get("growth_areas", [
+                        "Increase exposure to high-concurrency race condition scenarios",
+                        "Practice timed speedrun challenges to sharpen keyboard intuition"
+                    ]),
+                    "recommended_focus_this_week": data.get("recommended_focus_this_week", [
+                        "Complete the Weekly Boss Challenge with sub-50ms execution",
+                        "Review 10 flashcards under the Spaced Repetition SRS queue",
+                        "Synthesize 2 short revision notes for tricky edge cases"
+                    ]),
+                    "projected_readiness": data.get("projected_readiness", "High-Growth Candidate (Top 15%)"),
+                    "mentor_quote": data.get("mentor_quote", "Great engineers aren't the ones who know every syntax; they are the ones who understand how systems fail.")
+                }
+            except Exception as e:
+                print(f"[Gemini Performance Review Error]: {e}")
+
+        # Deterministic fallback review
+        return {
+            "summary": f"{user_name} has logged {weekly_minutes} productive minutes this week across {streak_days} consecutive streak days. Learning velocity is steady, with solid conceptual grasp of {user_role} foundations.",
+            "strengths": [
+                f"Consistent daily rhythm ({streak_days} consecutive days logged)",
+                f"High retention of hands-on interactive challenges ({total_xp} Total XP)"
+            ],
+            "growth_areas": [
+                "Push deeper into edge-case failure modes and non-blocking asynchronous patterns",
+                "Solidify algorithmic time & space complexity justification"
+            ],
+            "recommended_focus_this_week": [
+                "Crush the Multi-Track Weekly Boss Battle in the Sandbox",
+                "Join the 25-Min Study Squad Pomodoro focus room for deep work",
+                "Synthesize 60-second short notes for pre-interview revision"
+            ],
+            "projected_readiness": "On-Track for Tier-1 Roles (Top 18%)",
+            "mentor_quote": "First make it work, then make it right, then make it fast."
+        }
+
 
 gemini_service = GeminiService()
+

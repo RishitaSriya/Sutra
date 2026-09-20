@@ -72,6 +72,48 @@ CHALLENGE_TEST_SUITES = {
             }
         ]
     },
+    "boss_fest_landing": {
+        "title": "The College Fest Two-Pointer Ticket Matcher",
+        "entry_function": "solve",
+        "python_template": """def solve(nums, target):
+    seen = {}
+    for i, num in enumerate(nums):
+        diff = target - num
+        if diff in seen:
+            return [seen[diff], i]
+        seen[num] = i
+    return []
+""",
+        "js_template": """function solve(nums, target) {
+    const seen = new Map();
+    for (let i = 0; i < nums.length; i++) {
+        const diff = target - nums[i];
+        if (seen.has(diff)) {
+            return [seen.get(diff), i];
+        }
+        seen.set(nums[i], i);
+    }
+    return [];
+}
+""",
+        "test_cases": [
+            {
+                "name": "Standard Test: Target in Middle",
+                "args": [[2, 7, 11, 15], 9],
+                "expected": [0, 1]
+            },
+            {
+                "name": "Edge Case: Negative Numbers",
+                "args": [[-3, 4, 3, 90], 0],
+                "expected": [0, 2]
+            },
+            {
+                "name": "Duplicate Elements Handling",
+                "args": [[3, 3], 6],
+                "expected": [0, 1]
+            }
+        ]
+    },
     "challenge_debug_01": {
         "title": "SQL Sanitizer & Parameterized Query Builder",
         "entry_function": "sanitize_and_build",
@@ -95,8 +137,103 @@ CHALLENGE_TEST_SUITES = {
                 "expected": ["SELECT * FROM users WHERE username = %s", ["' OR '1'='1"]]
             }
         ]
+    },
+    "challenge_ds_01": {
+        "title": "Min-Max Feature Scaling & Outlier Filter",
+        "entry_function": "normalize_features",
+        "python_template": """def normalize_features(values):
+    # Scale values between 0.0 and 1.0 (Min-Max Scaling)
+    if not values:
+        return []
+    min_v = min(values)
+    max_v = max(values)
+    if min_v == max_v:
+        return [0.0] * len(values)
+    return [round((x - min_v) / (max_v - min_v), 2) for x in values]
+""",
+        "js_template": """function normalize_features(values) {
+    if (!values || values.length === 0) return [];
+    const minV = Math.min(...values);
+    const maxV = Math.max(...values);
+    if (minV === maxV) return values.map(() => 0.0);
+    return values.map(x => Number(((x - minV) / (maxV - minV)).toFixed(2)));
+}
+""",
+        "test_cases": [
+            {
+                "name": "Standard Range Normalization",
+                "args": [[10, 20, 30, 40, 50]],
+                "expected": [0.0, 0.25, 0.5, 0.75, 1.0]
+            },
+            {
+                "name": "Uniform Value Boundary Case",
+                "args": [[5, 5, 5]],
+                "expected": [0.0, 0.0, 0.0]
+            },
+            {
+                "name": "Two-Element Extreme Boundary",
+                "args": [[0, 100]],
+                "expected": [0.0, 1.0]
+            }
+        ]
+    },
+    "challenge_gate_01": {
+        "title": "LRU Page Replacement Fault Counter",
+        "entry_function": "count_page_faults",
+        "python_template": """def count_page_faults(pages, capacity):
+    # Return integer total number of page faults using LRU
+    memory = []
+    faults = 0
+    for page in pages:
+        if page not in memory:
+            faults += 1
+            if len(memory) >= capacity:
+                memory.pop(0)
+            memory.append(page)
+        else:
+            memory.remove(page)
+            memory.append(page)
+    return faults
+""",
+        "js_template": """function count_page_faults(pages, capacity) {
+    const memory = [];
+    let faults = 0;
+    for (const page of pages) {
+        const idx = memory.indexOf(page);
+        if (idx === -1) {
+            faults++;
+            if (memory.length >= capacity) {
+                memory.shift();
+            }
+            memory.push(page);
+        } else {
+            memory.splice(idx, 1);
+            memory.push(page);
+        }
+    }
+    return faults;
+}
+""",
+        "test_cases": [
+            {
+                "name": "GATE 2021 Standard Reference String",
+                "args": [[7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2], 4],
+                "expected": 6
+            },
+            {
+                "name": "Sequential Hit Optimization (Capacity 3)",
+                "args": [[1, 2, 3, 1, 2, 3], 3],
+                "expected": 3
+            },
+            {
+                "name": "Single Frame Stress Test",
+                "args": [[1, 2, 3, 4], 1],
+                "expected": 4
+            }
+        ]
     }
 }
+
 
 
 class SandboxService:

@@ -245,6 +245,10 @@ class NoteCreate(BaseModel):
     common_mistake: str
     is_saved: Optional[bool] = False
 
+class NoteGenerateAiRequest(BaseModel):
+    topic: str
+    category: Optional[str] = "Web Architecture"
+
 # Question & Quiz Schemas
 class QuestionResponse(BaseModel):
     id: str
@@ -485,6 +489,52 @@ class InterviewRespondResponse(BaseModel):
     verdict: Optional[str] = None
     xp_awarded: int = 0
     total_xp: int
+
+
+# User Progress & Analytics Schemas
+class DailyActivityStat(BaseModel):
+    date: str
+    day_name: str
+    minutes_spent: int
+    xp_earned: int
+    missions_completed: int
+    is_target_met: bool
+
+class SkillMasteryStat(BaseModel):
+    category: str
+    score: int  # 0 - 100
+    level_label: str
+    description: str
+
+class WeeklyAnalytics(BaseModel):
+    week_start: str
+    week_end: str
+    total_minutes: int
+    total_xp: int
+    active_days: int
+    avg_minutes_per_day: float
+    streak_days: int
+    daily_breakdown: List[DailyActivityStat]
+
+class MonthlyAnalytics(BaseModel):
+    month_name: str
+    year: int
+    total_hours: float
+    total_xp: int
+    completion_rate_percent: int
+    heatmap: List[Dict[str, Any]]  # [{date: 'YYYY-MM-DD', count: 1-4, xp: int, minutes: int}]
+    skills_mastery: List[SkillMasteryStat]
+
+class AICoachReviewRequest(BaseModel):
+    focus_topic: Optional[str] = None
+
+class AICoachReviewResponse(BaseModel):
+    summary: str
+    strengths: List[str]
+    growth_areas: List[str]
+    recommended_focus_this_week: List[str]
+    projected_readiness: str
+    mentor_quote: str
 
 
 

@@ -2172,6 +2172,35 @@ def seed_database(drop_existing: bool = False):
         badge_reward="Speed Demon ⚡",
         learning_path_id="path_web_dev"
     ))
+    db.add(Challenge(
+        id="challenge_ds_01",
+        title="WEEKLY BOSS: Real-Time Feature Matrix Normalizer",
+        scenario="QuickMart’s recommendation model fails in production because raw cart prices (₹10 to ₹50,000) skew gradient descent. You need to write an ultra-fast Min-Max feature normalizer.",
+        objective="Implement an O(N) normalize_features function that transforms unbounded numeric arrays into [0.0, 1.0] normalized vectors while handling uniform and extreme edge cases.",
+        type="boss",
+        difficulty=3,
+        duration_minutes=45,
+        skills=["Data Science", "Feature Engineering", "Vectorization", "Python/JS"],
+        requirements=["Scale all numeric inputs strictly to [0.0, 1.0]", "Handle uniform arrays gracefully with zeros", "Precision rounded to 2 decimal places"],
+        xp_reward=280,
+        badge_reward="Data Alchemist 🧪",
+        learning_path_id="path_data_science"
+    ))
+    db.add(Challenge(
+        id="challenge_gate_01",
+        title="WEEKLY BOSS: LRU Page Replacement Fault Simulator",
+        scenario="In a multi-threaded OS kernel, cache hit rates are degrading due to unoptimized LRU page eviction under limited RAM frames.",
+        objective="Write an optimal count_page_faults function that processes memory reference strings and calculates total page faults under arbitrary frame capacities.",
+        type="boss",
+        difficulty=4,
+        duration_minutes=60,
+        skills=["Operating Systems", "LRU Cache", "Memory Management", "GATE CSE"],
+        requirements=["Simulate LRU eviction policy accurately", "O(N * K) or better frame search", "Pass all standard reference string test suites"],
+        xp_reward=350,
+        badge_reward="Kernel Architect 🖥️",
+        learning_path_id="path_gate_cse"
+    ))
+
 
     # Feed Memes
     db.add(Post(
